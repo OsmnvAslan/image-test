@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Batch, ProductJob, StreamEvent } from "@/lib/types";
 import UploadArea, { type SelectedFile } from "@/components/UploadArea";
 import ResultCard from "@/components/ResultCard";
+import SubmissionWriteup from "@/components/SubmissionWriteup";
 
 type Phase = "idle" | "submitting" | "streaming" | "complete";
 
@@ -304,6 +305,14 @@ export default function Page() {
           </div>
         </section>
       )}
+
+      {/* ───── Submission write-up (below the working app) ───── */}
+      <section className="mt-16 border-t border-neutral-200 pt-12">
+        <p className="mb-8 text-sm font-medium uppercase tracking-widest text-indigo-600">
+          About this submission
+        </p>
+        <SubmissionWriteup />
+      </section>
     </main>
   );
 }
