@@ -211,12 +211,19 @@ export default function Page() {
   const showResults = phase === "streaming" || phase === "complete";
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8">
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Batch Creative</h1>
-        <p className="mt-1 text-sm text-gray-600">
-          Upload products + reference style → one styled social post per product,
-          rendered as each finishes.
+    <main className="mx-auto max-w-5xl px-4 py-12">
+      <header className="mb-10 animate-float-in">
+        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.2em] text-cyan-300 backdrop-blur">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
+          Batch Creative Engine
+        </div>
+        <h1 className="text-4xl font-black tracking-tight sm:text-5xl">
+          <span className="gradient-text">Products → styled social posts</span>
+        </h1>
+        <p className="mt-3 max-w-2xl text-sm text-slate-400 sm:text-base">
+          Drop in product shots + a reference style. The engine fans out one AI
+          social post per product — styled to match, streamed to the grid the
+          instant each one lands.
         </p>
       </header>
 
@@ -233,29 +240,37 @@ export default function Page() {
           validationError={validationError}
         />
       ) : (
-        <section className="space-y-5">
+        <section className="space-y-5 animate-float-in">
           {/* Batch status line */}
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-            <div className="flex flex-wrap items-center gap-3 text-sm">
+          <div className="neon-border flex flex-wrap items-center justify-between gap-3 rounded-2xl glass px-5 py-4">
+            <div className="flex flex-wrap items-center gap-4 text-sm">
               <span
-                className={`inline-flex items-center gap-1.5 font-medium ${
-                  phase === "complete" ? "text-green-700" : "text-indigo-700"
+                className={`inline-flex items-center gap-2 font-semibold ${
+                  phase === "complete" ? "text-emerald-300" : "text-cyan-300"
                 }`}
               >
                 <span
-                  className={`h-2 w-2 rounded-full ${
+                  className={`h-2.5 w-2.5 rounded-full ${
                     phase === "complete"
-                      ? "bg-green-500"
-                      : "animate-pulse bg-indigo-500"
+                      ? "bg-emerald-400 glow-cyan"
+                      : "bg-cyan-400 pulse-ring"
                   }`}
                 />
-                {phase === "complete" ? "Batch complete" : "Running"}
+                {phase === "complete" ? "Batch complete" : "Generating"}
               </span>
-              <span className="text-gray-600">
-                {terminal}/{total} done
+              <span className="font-mono text-slate-300">
+                {terminal}
+                <span className="text-slate-500">/{total}</span> done
                 {failed > 0 && (
-                  <span className="text-red-600"> · {failed} failed</span>
+                  <span className="text-rose-400"> · {failed} failed</span>
                 )}
+              </span>
+              {/* mini progress bar */}
+              <span className="hidden h-1.5 w-28 overflow-hidden rounded-full bg-white/10 sm:block">
+                <span
+                  className="block h-full rounded-full bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400 transition-all duration-500"
+                  style={{ width: total ? `${(terminal / total) * 100}%` : "0%" }}
+                />
               </span>
             </div>
 
@@ -263,34 +278,39 @@ export default function Page() {
               <button
                 type="button"
                 onClick={handleReset}
-                className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-cyan-200"
               >
-                Start new batch
+                ↻ New batch
               </button>
             )}
           </div>
 
           {connectionNote && (
-            <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            <p className="rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-2.5 text-sm text-amber-200">
               {connectionNote}
             </p>
           )}
 
           {/* Shared style fingerprint (consistency, collapsible) */}
           {styleFingerprint && (
-            <div className="rounded-lg border border-gray-200 bg-white">
+            <div className="overflow-hidden rounded-2xl glass">
               <button
                 type="button"
                 onClick={() => setFingerprintOpen((v) => !v)}
-                className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm font-medium text-gray-700"
+                className="flex w-full items-center justify-between px-5 py-3 text-left text-sm font-semibold text-slate-200 transition hover:text-cyan-200"
               >
-                <span>Shared style fingerprint</span>
-                <span className="text-gray-400">
+                <span className="inline-flex items-center gap-2">
+                  <span className="text-cyan-400">◈</span> Shared style fingerprint
+                  <span className="rounded-full bg-violet-500/20 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-violet-200">
+                    reused on every post
+                  </span>
+                </span>
+                <span className="text-slate-500">
                   {fingerprintOpen ? "▲" : "▼"}
                 </span>
               </button>
               {fingerprintOpen && (
-                <p className="border-t border-gray-100 px-4 py-3 text-xs leading-relaxed text-gray-600">
+                <p className="border-t border-white/10 px-5 py-4 font-mono text-xs leading-relaxed text-slate-400">
                   {styleFingerprint}
                 </p>
               )}
@@ -298,19 +318,29 @@ export default function Page() {
           )}
 
           {/* Result grid */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {jobs.map((job) => (
-              <ResultCard key={job.id} job={job} />
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {jobs.map((job, i) => (
+              <div
+                key={job.id}
+                className="animate-float-in"
+                style={{ animationDelay: `${Math.min(i * 70, 500)}ms` }}
+              >
+                <ResultCard job={job} />
+              </div>
             ))}
           </div>
         </section>
       )}
 
       {/* ───── Submission write-up (below the working app) ───── */}
-      <section className="mt-16 border-t border-neutral-200 pt-12">
-        <p className="mb-8 text-sm font-medium uppercase tracking-widest text-indigo-600">
-          About this submission
-        </p>
+      <section className="mt-20 pt-12">
+        <div className="mb-8 flex items-center gap-4">
+          <span className="h-px flex-1 bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-violet-300">
+            About this submission
+          </p>
+          <span className="h-px flex-1 bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
+        </div>
         <SubmissionWriteup />
       </section>
     </main>

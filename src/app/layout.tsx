@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Batch Creative",
-  description: "Batch product → styled social posts",
+  title: "Batch Creative — AI Social Posts",
+  description: "Batch product → styled social posts, streamed as they generate.",
 };
 
 export default function RootLayout({

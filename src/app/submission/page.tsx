@@ -9,14 +9,14 @@ export const metadata: Metadata = {
 export default function SubmissionPage() {
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
-      <header className="mb-14">
-        <p className="mb-2 text-sm font-medium uppercase tracking-widest text-indigo-600">
+      <header className="mb-14 animate-float-in">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.25em] text-cyan-300">
           Engineering Challenge · Take-home
         </p>
-        <h1 className="text-4xl font-bold tracking-tight text-neutral-900">
-          Batch Creative
+        <h1 className="text-4xl font-black tracking-tight">
+          <span className="gradient-text">Batch Creative</span>
         </h1>
-        <p className="mt-3 text-lg text-neutral-600">
+        <p className="mt-3 text-lg text-slate-400">
           Upload N product images + 1–2 reference images → N styled social posts,
           one per product, each rendering as it lands.
         </p>
@@ -24,7 +24,7 @@ export default function SubmissionPage() {
 
       <SubmissionWriteup />
 
-      <footer className="mt-4 border-t border-neutral-200 pt-6 text-sm text-neutral-400">
+      <footer className="mt-4 border-t border-white/10 pt-6 text-sm text-slate-500">
         Batch Creative — take-home submission.
       </footer>
     </main>

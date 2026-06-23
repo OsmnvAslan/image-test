@@ -11,7 +11,7 @@ export default function SubmissionWriteup({
   showExample?: boolean;
 }) {
   return (
-    <div className="text-neutral-800">
+    <div className="text-slate-300 [&_code]:rounded [&_code]:bg-white/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.85em] [&_code]:text-cyan-200 [&_b]:text-slate-100">
       {/* ───────────────── 1. The product ───────────────── */}
       <Section index="1" title="The product">
         <p>
@@ -27,9 +27,9 @@ export default function SubmissionWriteup({
             <img
               src="/example-post.svg"
               alt="Example generated social post: a white sneaker on a warm minimalist studio background with an overlaid headline and caption."
-              className="w-full max-w-sm rounded-lg border border-neutral-200 shadow-sm"
+              className="w-full max-w-sm rounded-2xl border border-white/10 shadow-[0_0_40px_-12px_rgba(34,211,238,0.5)]"
             />
-            <figcaption className="mt-2 text-sm text-neutral-500">
+            <figcaption className="mt-2 text-sm text-slate-500">
               One generated post: real image (Pollinations) + AI social copy
               overlaid as crisp HTML text.
             </figcaption>
@@ -63,7 +63,7 @@ export default function SubmissionWriteup({
 
       {/* ─────────────── 2. How it was built ─────────────── */}
       <Section index="2" title="How it was built">
-        <h3 className="mb-2 mt-2 font-semibold text-neutral-900">How I used AI</h3>
+        <h3 className="mb-2 mt-2 font-semibold text-slate-100">How I used AI</h3>
         <p>
           I worked in <b>agent-teams</b> mode: acting as team lead, I wrote a{" "}
           <code>PLAN.md</code> with exact contracts (shared types, 3 HTTP
@@ -106,42 +106,42 @@ export default function SubmissionWriteup({
           </li>
         </ul>
 
-        <h3 className="mb-2 mt-6 font-semibold text-neutral-900">Toolset</h3>
-        <div className="overflow-hidden rounded-lg border border-neutral-200">
+        <h3 className="mb-2 mt-6 font-semibold text-slate-100">Toolset</h3>
+        <div className="overflow-hidden rounded-2xl glass">
           <table className="w-full text-left text-sm">
-            <thead className="bg-neutral-50 text-neutral-500">
+            <thead className="bg-white/[0.03] text-slate-400">
               <tr>
-                <th className="px-3 py-2 font-medium">Tool</th>
-                <th className="px-3 py-2 font-medium">For</th>
+                <th className="px-4 py-2.5 font-medium">Tool</th>
+                <th className="px-4 py-2.5 font-medium">For</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-100">
+            <tbody className="divide-y divide-white/5">
               {TOOLS.map((t) => (
-                <tr key={t.name}>
-                  <td className="px-3 py-2 font-medium text-neutral-900">
+                <tr key={t.name} className="transition hover:bg-white/[0.03]">
+                  <td className="px-4 py-2.5 font-medium text-cyan-200">
                     {t.name}
                   </td>
-                  <td className="px-3 py-2 text-neutral-600">{t.use}</td>
+                  <td className="px-4 py-2.5 text-slate-400">{t.use}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        <h3 className="mb-2 mt-6 font-semibold text-neutral-900">
+        <h3 className="mb-2 mt-6 font-semibold text-slate-100">
           Time breakdown
         </h3>
         <ul className="ml-5 list-disc space-y-1">
           <li>
-            <b>Total:</b> ~2h 45m
+            <b>Total:</b> ~3h 25m
           </li>
           <li>
             <b>My hands-on time</b> (planning, contracts, prompts, review, manual
-            testing, directing): <b>~1h 5m</b>
+            testing, UI/visual design, directing): <b>~1h 30m</b>
           </li>
           <li>
             <b>AI/LLM working time</b> (code generation, vision/image calls,
-            builds): <b>~1h 40m</b>
+            builds): <b>~1h 55m</b>
           </li>
         </ul>
       </Section>
@@ -151,11 +151,12 @@ export default function SubmissionWriteup({
         <p>Public GitHub repository:</p>
         <a
           href={REPO}
-          className="mt-3 inline-flex items-center gap-2 rounded-lg bg-neutral-900 px-4 py-2 font-medium text-white hover:bg-neutral-700"
+          className="group mt-3 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 font-mono text-sm font-medium text-slate-100 transition hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-cyan-100"
         >
+          <span className="text-cyan-400 transition group-hover:translate-x-0.5">→</span>
           {REPO.replace("https://", "")}
         </a>
-        <p className="mt-4 text-sm text-neutral-600">
+        <p className="mt-4 text-sm text-slate-400">
           Layout: <code>src/lib/style/</code> (consistency),{" "}
           <code>src/lib/generation/</code> (reliability),{" "}
           <code>src/lib/store.ts</code> + <code>src/app/api/</code> (orchestration
@@ -179,13 +180,13 @@ function Section({
 }) {
   return (
     <section className="mb-12">
-      <h2 className="mb-4 flex items-center gap-3 text-2xl font-bold text-neutral-900">
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-base text-white">
+      <h2 className="mb-4 flex items-center gap-3 text-2xl font-bold text-slate-100">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 via-violet-500 to-fuchsia-500 text-base font-black text-white shadow-[0_0_20px_-6px_rgba(139,92,246,0.9)]">
           {index}
         </span>
         {title}
       </h2>
-      <div className="space-y-2 leading-relaxed text-neutral-700">{children}</div>
+      <div className="space-y-2 leading-relaxed text-slate-300">{children}</div>
     </section>
   );
 }
