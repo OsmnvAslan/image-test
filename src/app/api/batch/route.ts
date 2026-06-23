@@ -88,7 +88,7 @@ export async function POST(req: Request) {
     const job = jobs[i];
     updateJob(batch.id, job.id, { status: "running" });
     try {
-      const desc = await describeProduct(buf);
+      const desc = await describeProduct(buf, productNames[i]);
       const prompt = buildProductPrompt(fingerprint, desc);
       // Image and social copy are independent — run them concurrently so the
       // caption never adds latency to the critical path.

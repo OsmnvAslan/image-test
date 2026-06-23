@@ -18,6 +18,7 @@ import {
   FALLBACK_FINGERPRINT,
   FALLBACK_PRODUCT_DESCRIPTION,
   fallbackCopy,
+  subjectFromName,
 } from "./fallback";
 
 // Instruction sent for the shared style spine. We explicitly ask for ONLY
@@ -54,15 +55,22 @@ export async function buildStyleFingerprint(
 
 /**
  * Describe ONE product image. Called once per product job.
- * Degrades to a short generic descriptor on any failure.
+ * Prefers a vision caption; on any failure (no key / quota / timeout) it degrades
+ * to a subject derived from the product's filename, so the generated image is still
+ * about the right object. Only falls to a fully generic descriptor when the
+ * filename is noise too.
  */
-export async function describeProduct(productImage: Buffer): Promise<string> {
-  if (!productImage) return FALLBACK_PRODUCT_DESCRIPTION;
+export async function describeProduct(
+  productImage: Buffer,
+  productName = ""
+): Promise<string> {
+  const fallback = subjectFromName(productName);
+  if (!productImage) return fallback;
   try {
     const caption = await visionCaption(PRODUCT_INSTRUCTION, [productImage]);
-    return caption || FALLBACK_PRODUCT_DESCRIPTION;
+    return caption || fallback;
   } catch {
-    return FALLBACK_PRODUCT_DESCRIPTION;
+    return fallback;
   }
 }
 

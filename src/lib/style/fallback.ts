@@ -14,8 +14,30 @@ export const FALLBACK_FINGERPRINT =
   "calm minimalist mood, clean editorial composition with generous negative space, " +
   "smooth matte studio surface, shallow depth of field shot on a 50mm lens.";
 
-// Short generic subject descriptor used when the product image can't be captioned.
+// Short generic subject descriptor used when the product image can't be captioned
+// AND the filename gives us nothing usable.
 export const FALLBACK_PRODUCT_DESCRIPTION = "the product, centered hero shot";
+
+// Derive a usable image SUBJECT from a product filename when vision is unavailable
+// (e.g. quota exhausted). "sneaker.jpg" -> "sneaker, product shot". This keeps the
+// GENERATED image about the right object instead of a generic blob — without it,
+// every product gets the same generic prompt and Pollinations renders the same
+// thing for all of them. Returns the generic fallback only when the name is noise.
+export function subjectFromName(productName: string): string {
+  const raw = (productName || "")
+    .replace(/\.[a-z0-9]+$/i, "") // drop extension
+    .replace(/[-_]+/g, " ")
+    .replace(/\b(prod|product|img|image|photo|final|copy|untitled|download)\b/gi, " ")
+    .replace(/\d+/g, " ") // drop bare numbers like "Product 2" / "IMG 4821"
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+  if (!raw) return FALLBACK_PRODUCT_DESCRIPTION;
+  // Steer the text->image model toward a clearly recognizable, realistic object.
+  // A terse "watch, product shot" tends to render as an abstract blob on free
+  // models, so we name it as a real photographed product explicitly.
+  return `a realistic ${raw}, the actual ${raw} product clearly visible, detailed professional product photograph`;
+}
 
 // Deterministic social copy when the model can't write a caption. Derives a tidy
 // title from the product name (preferred) or description so the post still reads
