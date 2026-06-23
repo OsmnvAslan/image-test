@@ -8,7 +8,7 @@ import { GenerateInput, ImageProvider } from "@/lib/types";
 // provider artificially fails on (throws BEFORE any fetch). Lets integration demonstrate
 // per-product partial failure + failover to mock without real network errors.
 
-const POLLINATIONS_TIMEOUT_MS = 60_000;
+const POLLINATIONS_TIMEOUT_MS = 90_000; // Pollinations can be slow under load (seen 18–46s)
 
 // Stable, non-negative 32-bit seed derived from productName so retries are
 // deterministic-ish (same product -> same seed -> reproducible image).
@@ -44,9 +44,11 @@ export class PollinationsProvider implements ImageProvider {
     // just productName — otherwise products with identical/similar filenames collide
     // on the same seed and Pollinations returns the same image.
     const seed = stableSeed(`${input.productName}::${input.stylePrompt}`);
+    // 768x768 is plenty for a social post and noticeably faster than 1024 under
+    // load — fewer timeouts means fewer fallbacks to the mock provider.
     const url =
       `https://image.pollinations.ai/prompt/${encodeURIComponent(input.stylePrompt)}` +
-      `?width=1024&height=1024&nologo=true&seed=${seed}`;
+      `?width=768&height=768&nologo=true&seed=${seed}`;
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), POLLINATIONS_TIMEOUT_MS);
