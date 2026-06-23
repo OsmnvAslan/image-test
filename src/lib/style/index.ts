@@ -13,10 +13,11 @@
 // — they degrade to the deterministic fallbacks in ./fallback so the pipeline always
 // runs. See PLAN.md §7/§8 (documented scope cut).
 
-import { visionCaption } from "./openrouter";
+import { visionCaption, textCompletion } from "./openrouter";
 import {
   FALLBACK_FINGERPRINT,
   FALLBACK_PRODUCT_DESCRIPTION,
+  fallbackCopy,
 } from "./fallback";
 
 // Instruction sent for the shared style spine. We explicitly ask for ONLY
@@ -62,6 +63,58 @@ export async function describeProduct(productImage: Buffer): Promise<string> {
     return caption || FALLBACK_PRODUCT_DESCRIPTION;
   } catch {
     return FALLBACK_PRODUCT_DESCRIPTION;
+  }
+}
+
+// Instruction for the social copy. We want a real post's text: a short punchy
+// headline + a single caption line, in the mood implied by the shared style.
+const CAPTION_INSTRUCTION =
+  "You write social media copy for a product post. Given the product and the visual " +
+  "mood, write a punchy HEADLINE (2-4 words, Title Case) and a single CAPTION line " +
+  "(under 12 words, friendly, no hashtags). Reply as strict JSON: " +
+  '{"headline": "...", "caption": "..."}. No preamble, JSON only.';
+
+/**
+ * Write short social copy (headline + caption) for one product. Called once per job.
+ * Uses the same OpenRouter model (text-only here). Degrades to deterministic copy.
+ */
+export async function writeCaption(
+  productDescription: string,
+  fingerprint: string,
+  productName: string
+): Promise<{ headline: string; caption: string }> {
+  const prompt =
+    `${CAPTION_INSTRUCTION}\n\nProduct: ${productDescription}\nVisual mood: ${fingerprint}`;
+  try {
+    const raw = await textCompletion(prompt);
+    const parsed = parseCopy(raw);
+    if (parsed) return parsed;
+  } catch {
+    // fall through to deterministic copy
+  }
+  return fallbackCopy(productName, productDescription);
+}
+
+function parseCopy(
+  raw: string
+): { headline: string; caption: string } | undefined {
+  if (!raw) return undefined;
+  // Tolerate code fences / stray text around the JSON.
+  const match = raw.match(/\{[\s\S]*\}/);
+  if (!match) return undefined;
+  try {
+    const obj = JSON.parse(match[0]) as {
+      headline?: unknown;
+      caption?: unknown;
+    };
+    const headline = typeof obj.headline === "string" ? obj.headline.trim() : "";
+    const caption = typeof obj.caption === "string" ? obj.caption.trim() : "";
+    // Require BOTH fields — a half-parsed object (e.g. only a headline) would render
+    // a post with a missing caption line. Better to fall back to deterministic copy.
+    if (!headline || !caption) return undefined;
+    return { headline: headline.slice(0, 40), caption: caption.slice(0, 120) };
+  } catch {
+    return undefined;
   }
 }
 

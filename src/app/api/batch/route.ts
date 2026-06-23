@@ -12,6 +12,7 @@ import {
   buildStyleFingerprint,
   describeProduct,
   buildProductPrompt,
+  writeCaption,
 } from "@/lib/style";
 import { generatePost } from "@/lib/generation";
 import { createBatch, updateJob, completeBatch, newId } from "@/lib/store";
@@ -89,14 +90,21 @@ export async function POST(req: Request) {
     try {
       const desc = await describeProduct(buf);
       const prompt = buildProductPrompt(fingerprint, desc);
-      const result = await generatePost({
-        productImage: buf,
-        productName: productNames[i],
-        stylePrompt: prompt,
-      });
+      // Image and social copy are independent — run them concurrently so the
+      // caption never adds latency to the critical path.
+      const [result, copy] = await Promise.all([
+        generatePost({
+          productImage: buf,
+          productName: productNames[i],
+          stylePrompt: prompt,
+        }),
+        writeCaption(desc, fingerprint, productNames[i]),
+      ]);
       updateJob(batch.id, job.id, {
         status: "done",
         imageDataUrl: result.imageDataUrl,
+        headline: copy.headline,
+        caption: copy.caption,
         provider: result.provider,
         attempts: result.attempts,
       });

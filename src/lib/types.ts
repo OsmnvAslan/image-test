@@ -8,6 +8,8 @@ export interface ProductJob {
   productName: string; // filename or "Product N"
   status: JobStatus;
   imageDataUrl?: string; // result image as data URL (present iff status === 'done')
+  headline?: string; // short post headline, overlaid on the image (present iff 'done')
+  caption?: string; // 1-line post caption, shown under the image (present iff 'done')
   provider?: string; // which provider succeeded ("pollinations" | "together" | "mock")
   attempts: number; // total generation attempts across providers
   error?: string; // present iff status === 'failed'

@@ -35,7 +35,15 @@ export default function ResultCard({ job }: { job: ProductJob }) {
             alt={job.productName}
             className="h-full w-full object-cover"
           />
-          <div className="absolute bottom-1 right-1 flex gap-1">
+          {/* Headline overlaid on the image — real HTML text, crisp at any size. */}
+          {job.headline && (
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-3 pt-8">
+              <p className="text-lg font-bold leading-tight text-white drop-shadow">
+                {job.headline}
+              </p>
+            </div>
+          )}
+          <div className="absolute right-1 top-1 flex gap-1">
             {job.provider && (
               <span className="rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-medium text-white">
                 {job.provider}
@@ -46,8 +54,11 @@ export default function ResultCard({ job }: { job: ProductJob }) {
             </span>
           </div>
         </div>
-        <div className="p-3">
-          <p className="truncate text-sm font-medium text-gray-900" title={job.productName}>
+        <div className="space-y-1 p-3">
+          {job.caption && (
+            <p className="text-sm text-gray-800">{job.caption}</p>
+          )}
+          <p className="truncate text-xs text-gray-400" title={job.productName}>
             {job.productName}
           </p>
         </div>

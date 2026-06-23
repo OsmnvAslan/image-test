@@ -79,6 +79,31 @@ export async function visionCaption(
     : new Error("OpenRouter vision call failed");
 }
 
+// Text-only completion (no image) using the same model + retry behavior. Used for
+// writing the social copy. Throws on no-key / HTTP error / timeout / empty — caller
+// catches and falls back.
+export async function textCompletion(prompt: string): Promise<string> {
+  const key = getApiKey();
+  if (!key) throw new Error("OPENROUTER_API_KEY not set");
+
+  const content: Array<{ type: "text"; text: string }> = [
+    { type: "text", text: prompt },
+  ];
+
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= MAX_TRIES; attempt++) {
+    try {
+      return await singleCall(key, content);
+    } catch (err) {
+      lastErr = err;
+      if (attempt < MAX_TRIES) await sleep(RETRY_BASE_MS * attempt);
+    }
+  }
+  throw lastErr instanceof Error
+    ? lastErr
+    : new Error("OpenRouter text call failed");
+}
+
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
