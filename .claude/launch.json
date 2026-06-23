@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "batch-creative",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start"],
+      "autoPort": true,
+      "env": {
+        "MAX_CONCURRENCY": "3"
+      }
+    }
+  ]
+}
